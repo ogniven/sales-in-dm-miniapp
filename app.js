@@ -5,7 +5,7 @@ const TELEGRAM_USERNAME = "smart_lana";
 
 const situations = [
   "Спросил цену и исчез", "Сказал «дорого»", "Написал «я подумаю»",
-  "Просто перестал отвечать", "Другая ситуация"
+  "Просто перестал/а отвечать", "Другая ситуация"
 ];
 const hypotheses = [
   "Когда назвал/а цену", "Когда клиент начал сомневаться",
@@ -99,7 +99,7 @@ function render(focus = true) {
 }
 
 function buildMessage(answers) {
-  const lines = ["РАЗБОР ПЕРЕПИСКИ | THREADS", "Я прошла мини-диагностику."];
+  const lines = ["РАЗБОР ПЕРЕПИСКИ | THREADS", "", "Мини-диагностика пройдена."];
   if (answers.situation) lines.push(`Ситуация: ${answers.situation}.`);
   if (answers.hypothesis) lines.push(`Мне кажется, всё пошло не туда: ${answers.hypothesis}.`);
   lines.push("Сейчас пришлю обезличенные скрины.");
@@ -115,9 +115,7 @@ function updateChatLink() {
     return;
   }
   const text = encodeURIComponent(buildMessage(state));
-  sendLink.href = insideTelegram
-    ? `tg://resolve?domain=${username}&text=${text}`
-    : `https://t.me/${username}?text=${text}`;
+  sendLink.href = `https://t.me/${username}?text=${text}`;
 }
 
 document.getElementById("copy-text").addEventListener("click", async () => {
