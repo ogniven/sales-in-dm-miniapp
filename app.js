@@ -106,10 +106,10 @@ function openChat() {
     return;
   }
   const url = `https://t.me/${username}?text=${encodeURIComponent(buildMessage(state))}`;
-  if (insideTelegram && typeof telegram.openTelegramLink === "function") {
-    try { telegram.openTelegramLink(url); return; } catch { /* Обычная HTTPS-ссылка ниже. */ }
-  }
-  window.location.assign(url);
+  try {
+    if (window.open(url, "_blank")) return;
+  } catch { /* Если новое окно недоступно, открываем ссылку в текущем. */ }
+  window.location.href = url;
 }
 
 function goBack() {
