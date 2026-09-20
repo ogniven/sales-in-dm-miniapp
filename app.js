@@ -24,6 +24,9 @@ const screen = document.getElementById("screen");
 const next = document.getElementById("next");
 const back = document.getElementById("back");
 const notice = document.getElementById("notice");
+const finalActions = document.getElementById("final-actions");
+const sendLink = document.getElementById("send-link");
+const copyStatus = document.getElementById("copy-status");
 
 // Изменяйте тексты здесь, сохраняя HTML-теги и порядок экранов.
 const pages = [
@@ -55,6 +58,11 @@ function render(focus = true) {
   screen.innerHTML = pages[state.step];
   screen.className = state.step === 0 ? "start" : "";
   notice.hidden = true;
+  const isFinal = state.step === pages.length - 1;
+  next.hidden = isFinal;
+  finalActions.hidden = !isFinal;
+  copyStatus.hidden = true;
+  if (isFinal) updateChatLink();
   back.hidden = state.step === 0;
   next.textContent = buttons[state.step];
   next.disabled = (state.step === 1 && !state.situation) || (state.step === 2 && !state.hypothesis);
@@ -98,19 +106,29 @@ function buildMessage(answers) {
   return lines.join("\n");
 }
 
-function openChat() {
+function updateChatLink() {
   const username = TELEGRAM_USERNAME.trim().replace(/^@/, "");
   if (username === "YOUR_TELEGRAM_USERNAME" || !/^[a-zA-Z][a-zA-Z0-9_]{3,31}$/.test(username)) {
     notice.textContent = "Переход в чат пока не настроен. Владелец приложения скоро добавит ссылку.";
     notice.hidden = false;
+    sendLink.removeAttribute("href");
     return;
   }
-  const url = `https://t.me/${username}?text=${encodeURIComponent(buildMessage(state))}`;
-  try {
-    if (window.open(url, "_blank")) return;
-  } catch { /* Если новое окно недоступно, открываем ссылку в текущем. */ }
-  window.location.href = url;
+  const text = encodeURIComponent(buildMessage(state));
+  sendLink.href = insideTelegram
+    ? `tg://resolve?domain=${username}&text=${text}`
+    : `https://t.me/${username}?text=${text}`;
 }
+
+document.getElementById("copy-text").addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(buildMessage(state));
+    copyStatus.textContent = "Текст скопирован.";
+  } catch {
+    copyStatus.textContent = "Не удалось скопировать текст. Напишите @smart_lana по ссылке выше.";
+  }
+  copyStatus.hidden = false;
+});
 
 function goBack() {
   if (state.step > 0) { state.step -= 1; render(); }
@@ -118,7 +136,7 @@ function goBack() {
 back.addEventListener("click", goBack);
 next.addEventListener("click", () => {
   if (next.disabled) return;
-  if (state.step === pages.length - 1) { openChat(); return; }
+  if (state.step === pages.length - 1) return;
   state.step += 1;
   render();
 });
