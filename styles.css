@@ -32,6 +32,8 @@ button { cursor: pointer; }
 #progress-fill { height: 100%; width: calc(100% / 7); background: var(--accent); transition: width 180ms ease; }
 main { padding: 36px 0 30px; }
 .eyebrow { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0 0 28px; font-weight: 650; }
+.start .eyebrow { margin-bottom: 8px; }
+.brand-caption { font-size: 14px; color: #566056; margin-bottom: 28px; }
 h1 { font-size: clamp(29px, 7.8vw, 36px); line-height: 1.13; letter-spacing: -.035em; margin: 0 0 26px; font-weight: 700; overflow-wrap: break-word; }
 h1:focus { outline: none; }
 .start { padding-top: clamp(48px, 12vh, 100px); }
